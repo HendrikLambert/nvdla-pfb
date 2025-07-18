@@ -26,6 +26,9 @@ create_onnx_benchmarkfiles:
 create_nvdla_benchmarkfiles:
 	cd pytorch_model && python3 main.py --benchmark --type nvdla --onnx_folder $(SCRATCH)/$(onnx_folder) --nvdla_folder $(SCRATCH)/$(nvdla_folder) --trtexec_location $(TRTEXEC)
 
+create_nvdla_benchmarkfiles_int8:
+	cd pytorch_model && python3 main.py --benchmark --type nvdla --onnx_folder $(SCRATCH)/$(onnx_folder) --nvdla_folder $(SCRATCH)/$(nvdla_folder) --trtexec_location $(TRTEXEC) --int8
+
 create_nvdla_custom:
 	cd pytorch_model && python3 main.py --buildONNX --model_type pfb_dft -b 256 --onnx_file $(SCRATCH)/custom/custom_pfb_dft.onnx --buildNVDLA --loadable_location $(SCRATCH)/custom/custom_pfb_dft.nvdla --trtexec_location $(TRTEXEC) --verbose
 
@@ -34,6 +37,9 @@ run_pytorch:
 
 compile_pytorch:
 	cd pytorch_model && $(TRTEXEC) --onnx=$(file) --verbose --fp16 --saveEngine=loadable.nvdla --inputIOFormats=fp16:chw16 --outputIOFormats=fp16:chw16 --buildDLAStandalone --useDLACore=0
+
+compile_pytorch_int8:
+	cd pytorch_model && $(TRTEXEC) --onnx=$(file) --verbose --int8 --saveEngine=loadable.nvdla --inputIOFormats=int8:chw32 --outputIOFormats=int8:chw32 --buildDLAStandalone --useDLACore=0
 
 test_pytorch:
 	cd pytorch_model && python3 -m unittest discover -s tests

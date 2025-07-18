@@ -39,7 +39,7 @@ def build_onnx_benchmark_files(dir: str):
 
 
 def build_loadable_benchmark_files(
-    onnx_dir: str, nvdla_dir: str, trtexe_location: str, verbose: bool = False
+    onnx_dir: str, nvdla_dir: str, trtexe_location: str, int8: bool, verbose: bool = False
 ):
     """
     Build NVDLA loadable benchmark files from ONNX models.
@@ -47,6 +47,7 @@ def build_loadable_benchmark_files(
     :param onnx_dir: Directory containing ONNX models
     :param nvdla_dir: Directory to save the NVDLA loadable files
     :param trtexe_location: Path to the trtexe binary
+    :param int8: Whether to enable INT8 quantization
     :param verbose: Whether to enable verbose output
     """
     if not nvdla_dir.endswith("/"):
@@ -63,7 +64,7 @@ def build_loadable_benchmark_files(
             loadable_location = os.path.join(nvdla_dir, f.replace(".onnx", ".nvdla"))
             print(f"Building loadable for ONNX file: {onnx_file}")
             build_loadable_from_onnx(
-                onnx_file, loadable_location, trtexe_location, verbose
+                onnx_file, loadable_location, trtexe_location, int8, verbose
             )
 
 
@@ -94,7 +95,7 @@ def generate_model_name(b: int, c: int, t: int, model_type: str) -> str:
 
 
 def build_loadable_from_onnx(
-    onnx_file: str, loadable_location: str, trtexe_location: str, verbose: bool
+    onnx_file: str, loadable_location: str, trtexe_location: str, int8: bool, verbose: bool
 ):
     """
     Build NVDLA loadable from ONNX file using trtexe.
@@ -102,6 +103,7 @@ def build_loadable_from_onnx(
     :param onnx_file: Path to the ONNX file
     :param loadable_location: Location to save the NVDLA loadable
     :param trtexe_location: Path to the trtexe binary
+    :param int8: Whether to enable INT8 quantization
     :param verbose: Whether to enable verbose output
     """
 
@@ -110,9 +112,9 @@ def build_loadable_from_onnx(
         trtexe_location,
         "--onnx=" + onnx_file,
         "--saveEngine=" + loadable_location,
-        "--fp16",
-        "--inputIOFormats=fp16:chw16",
-        "--outputIOFormats=fp16:chw16",
+        "--" + ("int8" if int8 else "fp16"),
+        "--inputIOFormats=" + ("int8:chw32" if int8 else "fp16:chw16"),
+        "--outputIOFormats=" + ("int8:chw32" if int8 else "fp16:chw16"),
         "--buildDLAStandalone",
         "--useDLACore=0",
     ]

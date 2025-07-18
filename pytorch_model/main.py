@@ -105,6 +105,15 @@ def subroutine_build_nvdla():
         default="/usr/src/tensorrt/bin/trtexec",
         help="Location of the trtexec binary.",
     )
+    
+    # INT8 flag
+    parser.add_argument(
+        "--int8",
+        "-i",
+        action="store_true",
+        default=False,
+        help="Enable INT8 quantization for the NVDLA loadable.",
+    )
 
     # Verbose flag
     parser.add_argument(
@@ -117,6 +126,7 @@ def subroutine_build_nvdla():
         onnx_file=args.onnx_file,
         loadable_location=args.loadable_location,
         trtexe_location=args.trtexec_location,
+        int8=args.int8,
         verbose=args.verbose,
     )
 
@@ -156,6 +166,15 @@ def subroutine_build_benchmark():
         default="/usr/src/tensorrt/bin/trtexec",
         help="Location of the trtexec binary.",
     )
+    
+    # INT8 flag
+    parser.add_argument(
+        "--int8",
+        "-i",
+        action="store_true",
+        default=False,
+        help="Enable INT8 quantization for the NVDLA loadable.",
+    )
 
     args, _ = parser.parse_known_args()
 
@@ -172,6 +191,7 @@ def subroutine_build_benchmark():
             onnx_dir=args.onnx_folder,
             nvdla_dir=args.nvdla_folder,
             trtexe_location=args.trtexec_location,
+            int8=args.int8,
         )
 
 
